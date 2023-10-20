@@ -1,0 +1,39 @@
+name: Build and Deploy Vite App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Vite application
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        run: |
+          git config --global user.email "pietervantuijl2000@gmail.com"
+          git config --global user.name "PieterT2000"
+          git checkout --orphan gh-pages
+          git --work-tree dist add --all
+          git --work-tree dist commit -m "GitHub Actions: Build and deploy Vite app"
+          git push origin HEAD:gh-pages --force
+
+      - name: Clean up
+        run: |
+          git checkout main
+          git branch -D gh-pages
