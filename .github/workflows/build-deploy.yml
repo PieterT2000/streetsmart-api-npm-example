@@ -32,8 +32,3 @@ jobs:
           git --work-tree dist add --all
           git --work-tree dist commit -m "GitHub Actions: Build and deploy Vite app"
           git push origin HEAD:gh-pages --force
-
-      - name: Clean up
-        run: |
-          git checkout main
-          git branch -D gh-pages
