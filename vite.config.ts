@@ -12,7 +12,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: "/streetsmart-api-integration/",
+  base: "/streetsmart-api-npm-example/",
   // optimizeDeps: {
   //   include: ['@pietert/streetsmart-api'],
   // },
