@@ -18,6 +18,8 @@ jobs:
         with:
           node-version: 14
 
+      - name: Authenticate for private npm packages
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" >> ~/.npmrc
       - name: Install dependencies
         run: npm install
 
