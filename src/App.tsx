@@ -35,15 +35,24 @@ function App() {
 
     setLoading(true);
 
-    const options: Partial<ApiOptions> = {};
+    let options:
+      | Pick<
+          ApiOptions,
+          | "apiKey"
+          | "loginRedirectUri"
+          | "loginOauth"
+          | "logoutRedirectUri"
+          | "clientId"
+        >
+      | Pick<ApiOptions, "apiKey" | "username" | "password"> = null;
     if (oauthEnabled) {
-      Object.assign(options, {
+      options = {
         loginOauth: true,
         clientId: "DAC6C8E5-77AB-4F04-AFA5-D2A94DE6713F",
         loginRedirectUri: "login.html",
         logoutRedirectUri: "logout.html",
         apiKey: formData.get("apiKey") as string,
-      });
+      };
     } else {
       if (
         formData.get("username") === null ||
@@ -53,11 +62,11 @@ function App() {
         return;
       }
 
-      Object.assign(options, {
+      options = {
         username: formData.get("username") as string,
         password: formData.get("password") as string,
         apiKey: formData.get("apiKey") as string,
-      });
+      };
     }
 
     console.log("options", options);
@@ -92,8 +101,7 @@ function App() {
           <div className="flex items-center space-x-2">
             <Checkbox
               id="oauthCheck"
-              s
-              value={oauthEnabled}
+              value={String(oauthEnabled)}
               onCheckedChange={(checked) => setOauthEnabled(checked)}
             />
             <label
