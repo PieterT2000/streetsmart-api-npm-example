@@ -1,4 +1,4 @@
-import StreetSmartApi from "@pietert/streetsmart-api";
+import StreetSmartApi, { ApiOptions } from "@cyclomedia/streetsmart-api";
 
 export default class CyclomediaApi {
   typeName = "atlas:Recording";
@@ -11,19 +11,18 @@ export default class CyclomediaApi {
   };
 
   viewerType = this.panoramaConfig.defaultView;
-  async initStreetApi(auth: { username: string; password: string; apiKey: string }) {
+  async initStreetApi(options: Pick<ApiOptions, 'apiKey' | 'loginRedirectUri' | 'loginOauth' | 'logoutRedirectUri' | 'clientId'> | Pick<ApiOptions, 'apiKey' | 'username' | 'password'>) {
     // eslint-disable-next-line no-undef
-    return await StreetSmartApi.init.call(this, {
+    return await StreetSmartApi.init({
       targetElement: document.getElementById("panoramaViewerWindow"),
-      ...auth,
+      ...options,
       srs: this.srsName,
       locale: "en-us",
       configurationUrl: this.configurationUrl,
-      staticBaseUrl: "https://streetsmart.cyclomedia.com/api/v23.11/",
       addressSettings: {
-        locale: "us",
-        database: "Nokia",
-      },
+        locale: 'nl',
+        database: 'CMDatabase'
+      }
     })
       .then(() => "success")
       .catch((e) => {
@@ -32,7 +31,7 @@ export default class CyclomediaApi {
       });
   }
 
-  async openLocation(coordinates: number[], callback: (result: unknown) => void) {
+  async openLocation(coordinates: number[] | string, callback: (result: unknown) => void) {
     const promise = new Promise((resolve, reject) => {
       // eslint-disable-next-line no-undef
       StreetSmartApi.open(coordinates, {
@@ -61,10 +60,10 @@ export default class CyclomediaApi {
     return promise.then((result) => callback(result));
   }
 
-  destroy() {
+  destroy(loginOauth: boolean) {
     const options = {
       targetElement: document.getElementById("panoramaViewerWindow"),
-      loginOauth: false,
+      loginOauth,
     };
 
     // eslint-disable-next-line no-undef

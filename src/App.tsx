@@ -1,47 +1,68 @@
 import { FormEvent, MouseEvent, useEffect, useState } from "react";
 import CyclomediaApi from "@/lib/api";
+import { ApiOptions } from "@cyclomedia/streetsmart-api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
 import "./app.css";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 const api = new CyclomediaApi();
 
 function App() {
   const [initted, setInitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [oauthEnabled, setOauthEnabled] = useState<CheckedState>(false);
+
   useEffect(() => {
     return () => {
+      console.log("destroy");
       setInitted(false);
-      api.destroy();
+      api.destroy(!!oauthEnabled);
     };
   }, []);
 
   const handleOpenViewer = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    await api.openLocation([5.31982596963644, 50.9162282095559], () =>
-      console.log("opened")
-    );
+    await api.openLocation("5D4KX5SM", () => console.log("opened"));
   };
 
-  const handleInit = async (evt: FormEvent) => {
+  const handleLogin = async (evt: FormEvent) => {
     evt.preventDefault();
-    setLoading(true);
     const formData = new FormData(evt.target as HTMLFormElement);
 
-    if (
-      formData.get("username") === null ||
-      formData.get("password") === null ||
-      formData.get("apiKey") === null
-    )
-      return;
+    setLoading(true);
 
-    const res = await api.initStreetApi({
-      username: formData.get("username") as string,
-      password: formData.get("password") as string,
-      apiKey: formData.get("apiKey") as string,
-    });
+    const options: Partial<ApiOptions> = {};
+    if (oauthEnabled) {
+      Object.assign(options, {
+        loginOauth: true,
+        clientId: "DAC6C8E5-77AB-4F04-AFA5-D2A94DE6713F",
+        loginRedirectUri: "login.html",
+        logoutRedirectUri: "logout.html",
+        apiKey: formData.get("apiKey") as string,
+      });
+    } else {
+      if (
+        formData.get("username") === null ||
+        formData.get("password") === null ||
+        formData.get("apiKey") === null
+      ) {
+        return;
+      }
+
+      Object.assign(options, {
+        username: formData.get("username") as string,
+        password: formData.get("password") as string,
+        apiKey: formData.get("apiKey") as string,
+      });
+    }
+
+    console.log("options", options);
+
+    const res = await api.initStreetApi(options);
     if (res === "success") setInitted(true);
     else {
       (evt.target as HTMLFormElement).reset();
@@ -52,19 +73,40 @@ function App() {
   return (
     <div className="flex">
       <div className="controls p-[20px]">
-        <form className="w-[300px] space-y-6" onSubmit={handleInit}>
-          <Input type="text" name="username" placeholder="Username" required />
+        <form className="w-[300px] space-y-6" onSubmit={handleLogin}>
           <Input
+            disabled={!!oauthEnabled}
+            type="text"
+            name="username"
+            placeholder="Username"
+            required
+          />
+          <Input
+            disabled={!!oauthEnabled}
             type="password"
             name="password"
             placeholder="Password"
             required
           />
           <Input type="text" name="apiKey" placeholder="ApiKey" required />
-          <div className="space-x-3">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="oauthCheck"
+              s
+              value={oauthEnabled}
+              onCheckedChange={(checked) => setOauthEnabled(checked)}
+            />
+            <label
+              htmlFor="oauthCheck"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Login using oAuth
+            </label>
+          </div>
+          <div className="space-x-3 flex">
             <Button disabled={initted} type="submit">
               {loading ? <Loader2 className="animate-spin" /> : null}
-              Init API
+              Login
             </Button>
             <Button
               className="inline-block"
