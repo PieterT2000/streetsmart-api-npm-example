@@ -3,8 +3,8 @@ import StreetSmartApi, { ApiOptions } from "@cyclomedia/streetsmart-api";
 export default class CyclomediaApi {
   typeName = "atlas:Recording";
   apiUrl = "https://atlasapi.cyclomedia.com/api/recording/wfs";
-  srsName = "EPSG:4326";
-  imageSrs = "EPSG:3857";
+  srsName = "EPSG:28992";
+  imageSrs = "EPSG:28992";
   configurationUrl = "https://atlas.cyclomedia.com/configuration";
   panoramaConfig = {
     defaultView: "PANORAMA",
