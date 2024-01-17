@@ -1,20 +1,4 @@
-import { StreetSmartApi, ViewerType, ApiOptions, AuthOptions } from "@cyclomedia/streetsmart-api";
-
-
-
-// StreetSmartApi.init({
-//   loginOauth: true,
-// })
-
-StreetSmartApi.open([3433], {
-  viewerType: ViewerType.MAP,
-  srs: 'asdfdsf',
-  panoramaViewer: {
-    replace: true,
-  }
-}).then(viewers => {
-  viewers[0]
-})
+import { StreetSmartApi, ViewerType, ApiOptions, AuthOptions, PanoramaViewer } from "@cyclomedia/streetsmart-api";
 
 export default class CyclomediaApi {
   srsName = "EPSG:28992";
