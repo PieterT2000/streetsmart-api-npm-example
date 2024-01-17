@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cyclomedia/streetsmart-api": "24.1.0-rc.0",
+    "@cyclomedia/streetsmart-api": "24.1.1-rc.0",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
