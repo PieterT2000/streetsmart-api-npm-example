@@ -13,12 +13,7 @@ export default defineConfig({
     },
   },
   base: "/streetsmart-api-npm-example/",
-  // optimizeDeps: {
-  //   include: ['@pietert/streetsmart-api'],
-  // },
-  // build: {
-  //   commonjsOptions: {
-  //     include: [/streetsmart-api/, /node_modules/]
-  //   }
-  // }
+  optimizeDeps: {
+    include: ['@cyclomedia/streetsmart-api'],
+  },
 })

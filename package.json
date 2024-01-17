@@ -1,7 +1,7 @@
 {
   "name": "streetsmart-api-integration",
   "private": true,
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cyclomedia/streetsmart-api": "^23.12.4",
+    "@cyclomedia/streetsmart-api": "24.1.0-rc.0",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",

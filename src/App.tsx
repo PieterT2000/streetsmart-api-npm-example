@@ -1,6 +1,6 @@
 import { FormEvent, MouseEvent, useEffect, useState } from "react";
 import CyclomediaApi from "@/lib/api";
-import { ApiOptions } from "@cyclomedia/streetsmart-api";
+import { ApiOptions, AuthOptions } from "@cyclomedia/streetsmart-api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -26,7 +26,9 @@ function App() {
   const handleOpenViewer = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    await api.openLocation("5D4KX5SM", () => console.log("opened"));
+    await api.openLocation("5D4KX5SM", (res) =>
+      console.log("viewer opened", res)
+    );
   };
 
   const handleLogin = async (evt: FormEvent) => {
@@ -35,22 +37,13 @@ function App() {
 
     setLoading(true);
 
-    let options:
-      | Pick<
-          ApiOptions,
-          | "apiKey"
-          | "loginRedirectUri"
-          | "loginOauth"
-          | "logoutRedirectUri"
-          | "clientId"
-        >
-      | Pick<ApiOptions, "apiKey" | "username" | "password"> = null;
+    let options: Partial<ApiOptions> & AuthOptions;
     if (oauthEnabled) {
       options = {
         loginOauth: true,
         clientId: "DAC6C8E5-77AB-4F04-AFA5-D2A94DE6713F",
-        loginRedirectUri: "login.html",
-        logoutRedirectUri: "logout.html",
+        loginRedirectUri: window.location.href + "login.html",
+        logoutRedirectUri: window.location.href + "logout.html",
         apiKey: formData.get("apiKey") as string,
       };
     } else {
@@ -63,13 +56,12 @@ function App() {
       }
 
       options = {
+        loginOauth: false,
         username: formData.get("username") as string,
         password: formData.get("password") as string,
         apiKey: formData.get("apiKey") as string,
       };
     }
-
-    console.log("options", options);
 
     const res = await api.initStreetApi(options);
     if (res === "success") setInitted(true);

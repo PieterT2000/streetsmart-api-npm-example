@@ -1,30 +1,43 @@
-import StreetSmartApi, { ApiOptions } from "@cyclomedia/streetsmart-api";
+import { StreetSmartApi, ViewerType, ApiOptions, AuthOptions } from "@cyclomedia/streetsmart-api";
+
+
+
+// StreetSmartApi.init({
+//   loginOauth: true,
+// })
+
+StreetSmartApi.open([3433], {
+  viewerType: ViewerType.MAP,
+  srs: 'asdfdsf',
+  panoramaViewer: {
+    replace: true,
+  }
+}).then(viewers => {
+  viewers[0]
+})
 
 export default class CyclomediaApi {
-  typeName = "atlas:Recording";
-  apiUrl = "https://atlasapi.cyclomedia.com/api/recording/wfs";
   srsName = "EPSG:28992";
   imageSrs = "EPSG:28992";
-  configurationUrl = "https://atlas.cyclomedia.com/configuration";
-  panoramaConfig = {
-    defaultView: "PANORAMA",
-  };
-
-  viewerType = this.panoramaConfig.defaultView;
-  async initStreetApi(options: Pick<ApiOptions, 'apiKey' | 'loginRedirectUri' | 'loginOauth' | 'logoutRedirectUri' | 'clientId'> | Pick<ApiOptions, 'apiKey' | 'username' | 'password'>) {
-    // eslint-disable-next-line no-undef
-    return await StreetSmartApi.init({
+  async initStreetApi(options: Partial<ApiOptions> & AuthOptions) {
+    const apiOptions: ApiOptions =
+    {
       targetElement: document.getElementById("panoramaViewerWindow"),
-      ...options,
+      apiKey: "demo",
       srs: this.srsName,
-      locale: "en-us",
-      configurationUrl: this.configurationUrl,
+      locale: "en-US",
       addressSettings: {
         locale: 'nl',
         database: 'CMDatabase'
-      }
-    })
-      .then(() => "success")
+      },
+      ...options
+    }
+    // eslint-disable-next-line no-undef
+    return await StreetSmartApi.init(apiOptions)
+      .then((res) => {
+        console.log(res)
+        return 'success'
+      })
       .catch((e) => {
         console.error(e)
         return "error"
@@ -35,7 +48,7 @@ export default class CyclomediaApi {
     const promise = new Promise((resolve, reject) => {
       // eslint-disable-next-line no-undef
       StreetSmartApi.open(coordinates, {
-        viewerType: this.viewerType,
+        viewerType: ViewerType.PANORAMA,
         srs: this.imageSrs,
         panoramaViewer: {
           closable: true,
@@ -44,13 +57,11 @@ export default class CyclomediaApi {
           recordingsVisible: true,
           navbarVisible: true,
           timeTravelVisible: true,
-          // measureTypeButtonVisible: false,
-          // measureTypeButtonStart: false,
-          // measureTypeButtonToggle: false,
         },
       })
         .then((panoramaViewer) => {
           if (panoramaViewer && panoramaViewer[0]) {
+            (panoramaViewer[0] as PanoramaViewer)
             return resolve(panoramaViewer[0]);
           }
         })
